@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一行两句五言诗与时间显示</title>
+    <style>
+        @font-face {
+            font-family: 'AidianFengYaHeiChangTi';
+            src: url('fonts/AidianFengYaHeiChangTi.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0C1A2E;
+            overflow: hidden;
+        }
+
+        #time-container {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 30px 40px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+            text-align: center;
+            min-width: 320px;
+        }
+
+        #weekday {
+            font-family: 'AidianFengYaHeiChangTi', sans-serif;
+            color: #FFFFFF;
+            text-shadow: 0 0 10px rgba(255,255,255,0.7);
+            font-weight: normal;
+            margin: 0 0 15px 0; /* 保持与诗句的间距 */
+            font-size: 28px; /* 英语日期字体调大（原24px） */
+        }
+
+        #poetry {
+            font-family: "Microsoft YaHei Light", "Microsoft YaHei", sans-serif;
+            color: #E0E0E0;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+            font-weight: 300;
+            margin: 0 0 25px 0;
+            font-size: 22px;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        #poetry .separator {
+            display: inline-block;
+            margin: 0 8px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        #time {
+            font-family: 'AidianFengYaHeiChangTi', sans-serif;
+            font-size: 80px;
+            color: #FFFFFF;
+            text-shadow: 0 0 15px rgba(255,255,255,0.9);
+            font-weight: normal;
+            margin: 0;
+        }
+
+        /* 响应式调整 - 同步放大英语日期字体 */
+        @media (max-width: 768px) {
+            #time {
+                font-size: 60px;
+            }
+            #weekday {
+                font-size: 24px; /* 原20px */
+            }
+            #poetry {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #time {
+                font-size: 45px;
+            }
+            #weekday {
+                font-size: 22px; /* 原18px */
+            }
+            #poetry {
+                font-size: 18px;
+                letter-spacing: 1px;
+                margin-bottom: 15px;
+            }
+            #time-container {
+                padding: 20px 20px;
+                min-width: auto;
+                width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="time-container">
+        <div id="weekday">Today is Monday</div>
+        <div id="poetry">
+            白日依山尽<span class="separator">·</span>黄河入海流
+        </div>
+        <div id="time"></div>
+    </div>
+
+    <script>
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        
+        const poemGroups = [
+            "明月松间照<span class='separator'>·</span>清泉石上流",
+            "空山新雨后<span class='separator'>·</span>天气晚来秋",
+            "人闲桂花落<span class='separator'>·</span>夜静春山空",
+            "木末芙蓉花<span class='separator'>·</span>山中发红萼",
+            "空山不见人<span class='separator'>·</span>但闻人语响",
+            "返景入深林<span class='separator'>·</span>复照青苔上",
+            "白日依山尽<span class='separator'>·</span>黄河入海流",
+            "欲穷千里目<span class='separator'>·</span>更上一层楼",
+            "大漠孤烟直<span class='separator'>·</span>长河落日圆",
+            "单车欲问边<span class='separator'>·</span>属国过居延",
+            "举杯邀明月<span class='separator'>·</span>对影成三人",
+            "月既不解饮<span class='separator'>·</span>影徒随我身",
+            "床前明月光<span class='separator'>·</span>疑是地上霜",
+            "举头望明月<span class='separator'>·</span>低头思故乡",
+            "春眠不觉晓<span class='separator'>·</span>处处闻啼鸟",
+            "夜来风雨声<span class='separator'>·</span>花落知多少",
+            "红豆生南国<span class='separator'>·</span>春来发几枝",
+            "愿君多采撷<span class='separator'>·</span>此物最相思",
+            "青山看不厌<span class='separator'>·</span>流水趣何长",
+            "君自故乡来<span class='separator'>·</span>应知故乡事",
+            "来日绮窗前<span class='separator'>·</span>寒梅著花未",
+            "深林人不知<span class='separator'>·</span>明月来相照",
+            "种豆南山下<span class='separator'>·</span>草盛豆苗稀",
+            "晨兴理荒秽<span class='separator'>·</span>带月荷锄归",
+        ];
+        
+        function updateAll() {
+            const now = new Date();
+            const hour = now.getHours();
+            
+            document.getElementById('weekday').textContent = `Today is ${weekdays[now.getDay()]}`;
+            document.getElementById('poetry').innerHTML = poemGroups[hour];
+            
+            const h = hour.toString().padStart(2, '0');
+            const m = now.getMinutes().toString().padStart(2, '0');
+            const s = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('time').textContent = `${h}:${m}:${s}`;
+        }
+
+        updateAll();
+        setInterval(updateAll, 1000);
+    </script>
+</body>
+</html>
